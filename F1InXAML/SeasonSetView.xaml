@@ -1,0 +1,122 @@
+﻿<UserControl x:Class="F1InXAML.SeasonSetView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:F1InXAML"
+             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+             mc:Ignorable="d" 
+             d:DesignHeight="300" d:DesignWidth="300"
+             d:DataContext="{d:DesignInstance local:SeasonSet, d:IsDesignTimeCreatable=False}">
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/materialdesigntheme.textblock.xaml"></ResourceDictionary>
+            </ResourceDictionary.MergedDictionaries>
+            <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
+        </ResourceDictionary>
+    </UserControl.Resources>
+    <DockPanel>
+        <materialDesign:TransitioningContent DockPanel.Dock="Top">
+            <materialDesign:TransitioningContent.OpeningEffects>
+                <materialDesign:TransitionEffect Kind="SlideInFromTop" Duration="0:0:0.6" />
+                <materialDesign:TransitionEffect Kind="FadeIn" Duration="0:0:0.6" />
+            </materialDesign:TransitioningContent.OpeningEffects>
+            <materialDesign:ColorZone Mode="Dark" Height="200" Margin="4 0 4 0" materialDesign:ShadowAssist.ShadowDepth="Depth3"
+                                      Width="576" HorizontalAlignment="Left">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*" />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
+                    <Image Source="Resources/kimi-raikkonen-2.jpg" Stretch="UniformToFill" Margin="0 -108 0 0" />
+                    <TextBlock Style="{StaticResource MaterialDesignDisplay1TextBlock}" VerticalAlignment="Bottom" Margin="8"
+                               Grid.Row="1"
+                               >F1 in XAML</TextBlock>
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Grid.Row="1">
+                        <ProgressBar IsIndeterminate="True" Value="30" 
+                                     Style="{DynamicResource MaterialDesignCircularProgressBar}"
+                                     Foreground="{DynamicResource MaterialDesignPaper}"
+                                     VerticalAlignment="Center"                                 
+                                     Margin="0 0 16 0"
+                                     Visibility="{Binding IsBusy, Converter={StaticResource BooleanToVisibilityConverter}}"
+                                     />
+                        <materialDesign:PopupBox PlacementMode="BottomAndAlignRightEdges" 
+                                                 VerticalAlignment="Center"                                             
+                                                 Margin="0 0 16 0">
+                            <Button Content="About..." Command="{x:Static materialDesign:DialogHost.OpenDialogCommand}"/>
+                        </materialDesign:PopupBox>
+                    </StackPanel>
+                </Grid>
+            </materialDesign:ColorZone>
+        </materialDesign:TransitioningContent>
+        <ScrollViewer Margin="0 12 0 0">
+            <ItemsControl ItemsSource="{Binding Seasons}" VerticalAlignment="Top" Margin="0 4 0 0">
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <UniformGrid Columns="2" />
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate DataType="{x:Type local:Season}">
+                        <materialDesign:TransitioningContent>
+                            <materialDesign:TransitioningContent.OpeningEffects>
+                                <materialDesign:TransitionEffect Kind="SlideInFromRight" Duration="0:0:0.150" />
+                                <materialDesign:TransitionEffect Kind="FadeIn" Duration="0:0:0.150" />
+                            </materialDesign:TransitioningContent.OpeningEffects>
+                            <materialDesign:Card Width="280" Margin="0 0 0 6" TextOptions.TextFormattingMode="Ideal">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="*" />
+                                    </Grid.ColumnDefinitions>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="Auto" />
+                                    </Grid.RowDefinitions>
+                                    <TextBlock Text="{Binding Year}" Style="{StaticResource MaterialDesignDisplay1TextBlock}" Margin="8"
+                                               VerticalAlignment="Center"/>
+                                    <Grid Grid.Column="1" HorizontalAlignment="Stretch">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="Auto" />
+                                            <ColumnDefinition Width="*" />
+                                        </Grid.ColumnDefinitions>
+                                        <materialDesign:PackIcon Kind="Trophy" Height="32" Width="32" VerticalAlignment="Center"
+                                                                 Foreground="{DynamicResource PrimaryHueLightBrush}" />
+                                        <Grid Margin="8 8 8 0" HorizontalAlignment="Stretch" Grid.Column="1">
+                                            <Grid.RowDefinitions>
+                                                <RowDefinition Height="Auto" />
+                                                <RowDefinition Height="Auto" />
+                                            </Grid.RowDefinitions>
+                                            <StackPanel>
+                                                <TextBlock Text="Winner:" Style="{StaticResource MaterialDesignSubheadingTextBlock}" />
+                                                <TextBlock Text="{Binding WinningDriver.Driver.FamilyName}" Style="{StaticResource MaterialDesignTitleTextBlock}"  />
+                                                <TextBlock Text="{Binding WinningDriver.Driver.GivenName}" Style="{StaticResource MaterialDesignBody1TextBlock}" />
+                                            </StackPanel>
+                                            <Border BorderBrush="{DynamicResource MaterialDesignDivider}" BorderThickness="0 1 0 0"
+                                                    Grid.Row="1" 
+                                                    TextOptions.TextFormattingMode="Display"
+                                                    TextOptions.TextRenderingMode="Auto"
+                                                    SnapsToDevicePixels="True">
+                                                <TextBlock Style="{StaticResource MaterialDesignCaptionTextBlock}" Margin="0 4 0 0">
+                                                    <Run>Points: </Run>
+                                                    <Run Text="{Binding WinningDriver.Points, Mode=OneWay}" />
+                                                    <Run>Wins: </Run>
+                                                    <Run Text="{Binding WinningDriver.Wins, Mode=OneWay}" />
+                                                </TextBlock>
+                                            </Border>
+                                        </Grid>
+                                    </Grid>
+                                    <Button Grid.Row="1" Grid.Column="1" Style="{DynamicResource MaterialDesignFlatButton}" 
+                                            Command="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:SeasonSetView}}, Path=DataContext.ShowSeasonCommand}"
+                                            CommandParameter="{Binding }"
+                                            HorizontalAlignment="Right" Margin="8">MORE</Button>
+                                </Grid>
+                            </materialDesign:Card>
+                        </materialDesign:TransitioningContent>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+        </ScrollViewer>
+    </DockPanel>
+</UserControl>
