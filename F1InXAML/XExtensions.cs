@@ -1,4 +1,9 @@
-﻿using System.Xml.Linq;
+﻿using System;
+using System.Windows;
+using System.Windows.Media;
+using System.Windows.Media.Animation;
+using System.Xml.Linq;
+using MaterialDesignThemes.Wpf.Transitions;
 
 namespace F1InXAML
 {

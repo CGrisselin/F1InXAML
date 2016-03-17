@@ -29,22 +29,29 @@
                          ItemContainerStyle="{StaticResource ListBoxItemStyle}">
                     <ListBox.ItemTemplate>
                         <DataTemplate DataType="{x:Type local:DriverStanding}">
-                            <materialDesign:ColorZone Mode="Dark">
-                                <DockPanel>
-                                    <TextBlock Text="{Binding Points}" VerticalAlignment="Center" DockPanel.Dock="Right" Margin="0 0 16 0" />
-                                    <StackPanel Orientation="Horizontal">
-                                        <materialDesign:ColorZone Mode="Accent" Height="26" Width="26" Margin="4" CornerRadius="2">
-                                            <TextBlock Text="{Binding Position}" HorizontalAlignment="Center" VerticalAlignment="Center" />
-                                        </materialDesign:ColorZone>
-                                        <TextBlock Text="{Binding Driver.PermanentNumber}" VerticalAlignment="Center" Margin="16 0 0 0" Width="16" />
-                                        <TextBlock VerticalAlignment="Center" Margin="16 0 0 0">
+                            <materialDesign:TransitioningContent OpeningEffectsOffset="{materialDesign:IndexedItemOffsetMultiplierExtension 0:0:0.1}"
+                                                                 Opacity="0"
+                                                                 RunHint="Loaded">
+                                <materialDesign:TransitioningContent.OpeningEffects>
+                                    <materialDesign:TransitionEffect Kind="SlideInFromLeft" />
+                                    <materialDesign:TransitionEffect Kind="FadeIn" />
+                                </materialDesign:TransitioningContent.OpeningEffects>
+                                <materialDesign:ColorZone Mode="Dark">
+                                    <DockPanel>
+                                        <TextBlock Text="{Binding Points}" VerticalAlignment="Center" DockPanel.Dock="Right" Margin="0 0 16 0" />
+                                        <StackPanel Orientation="Horizontal">
+                                            <materialDesign:ColorZone Mode="Accent" Height="26" Width="26" Margin="4" CornerRadius="2">
+                                                <TextBlock Text="{Binding Position}" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                            </materialDesign:ColorZone>
+                                            <TextBlock Text="{Binding Driver.PermanentNumber}" VerticalAlignment="Center" Margin="16 0 0 0" Width="16" />
+                                            <TextBlock VerticalAlignment="Center" Margin="16 0 0 0">
                                         <Run Text="{Binding Driver.FamilyName, Mode=OneWay}" />
                                         <Run Text="{Binding Driver.GivenName, Mode=OneWay}" />
-                                        </TextBlock>
-                                    </StackPanel>
-                                </DockPanel>
-                                
-                            </materialDesign:ColorZone>
+                                            </TextBlock>
+                                        </StackPanel>
+                                    </DockPanel>
+                                </materialDesign:ColorZone>
+                            </materialDesign:TransitioningContent>
                         </DataTemplate>
                     </ListBox.ItemTemplate>
                 </ListBox>
@@ -54,17 +61,25 @@
                          ItemContainerStyle="{StaticResource ListBoxItemStyle}">
                     <ListBox.ItemTemplate>
                         <DataTemplate DataType="{x:Type local:ConstructorStanding}">
-                            <materialDesign:ColorZone Mode="Dark">
-                                <DockPanel>
-                                    <TextBlock Text="{Binding Points}" VerticalAlignment="Center" DockPanel.Dock="Right" Margin="0 0 16 0" />
-                                    <StackPanel Orientation="Horizontal">
-                                        <materialDesign:ColorZone Mode="Accent" Height="26" Width="26" Margin="4" CornerRadius="2">
-                                            <TextBlock Text="{Binding Position}" HorizontalAlignment="Center" VerticalAlignment="Center" />
-                                        </materialDesign:ColorZone>
-                                        <TextBlock Text="{Binding Constructor.Name, Mode=OneWay}" VerticalAlignment="Center" Margin="16 0 0 0" />
-                                    </StackPanel>
-                                </DockPanel>
-                            </materialDesign:ColorZone>
+                            <materialDesign:TransitioningContent OpeningEffectsOffset="{materialDesign:IndexedItemOffsetMultiplierExtension 0:0:0.1}"
+                                                                 Opacity="0"
+                                                                 RunHint="Loaded">
+                                <materialDesign:TransitioningContent.OpeningEffects>
+                                    <materialDesign:TransitionEffect Kind="SlideInFromLeft" />
+                                    <materialDesign:TransitionEffect Kind="FadeIn" />
+                                </materialDesign:TransitioningContent.OpeningEffects>
+                                <materialDesign:ColorZone Mode="Dark">
+                                    <DockPanel>
+                                        <TextBlock Text="{Binding Points}" VerticalAlignment="Center" DockPanel.Dock="Right" Margin="0 0 16 0" />
+                                        <StackPanel Orientation="Horizontal">
+                                            <materialDesign:ColorZone Mode="Accent" Height="26" Width="26" Margin="4" CornerRadius="2">
+                                                <TextBlock Text="{Binding Position}" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                            </materialDesign:ColorZone>
+                                            <TextBlock Text="{Binding Constructor.Name, Mode=OneWay}" VerticalAlignment="Center" Margin="16 0 0 0" />
+                                        </StackPanel>
+                                    </DockPanel>
+                                </materialDesign:ColorZone>
+                            </materialDesign:TransitioningContent>
                         </DataTemplate>
                     </ListBox.ItemTemplate>
                 </ListBox>
