@@ -1,33 +1,66 @@
 ﻿using System;
 using System.ComponentModel;
+using System.Linq;
 using System.Runtime.CompilerServices;
+using System.Windows.Input;
 using System.Windows.Markup;
 
 namespace F1InXAML
 {
-    public class MainViewModel : INotifyPropertyChanged
+    public class MainViewModel : INotifyPropertyChanged, ISlideNavigationSubject
     {
-        private Season _activeSeason;
-        private int _activePageIndex;
+        private readonly SlideNavigator _slideNavigator;
+        private int _activeSlideIndex;
 
-        public SeasonSet SeasonSet => new SeasonSet(ShowSeasonHandler);
-
-        private void ShowSeasonHandler(Season season)
+        public MainViewModel()
         {
-            ActiveSeason = season;
-            ActivePageIndex = 1;
+            CommandManager.RegisterClassCommandBinding(typeof(MainWindow), new CommandBinding(NavigationCommands.ShowRaceCommand, ShowRaceExecuted));
+            CommandManager.RegisterClassCommandBinding(typeof(MainWindow), new CommandBinding(NavigationCommands.ShowSeasonCommand, ShowSeasonExecuted));
+            CommandManager.RegisterClassCommandBinding(typeof(MainWindow), new CommandBinding(NavigationCommands.GoBackCommand, GoBackExecuted));
+            CommandManager.RegisterClassCommandBinding(typeof(MainWindow), new CommandBinding(System.Windows.Input.NavigationCommands.BrowseBack, GoBackExecuted));
+            CommandManager.RegisterClassCommandBinding(typeof(MainWindow), new CommandBinding(System.Windows.Input.NavigationCommands.BrowseForward, GoForwardExecuted));
+
+            Slides = new object[] {SeasonSet, SeasonViewModel, RaceViewModel};
+            _slideNavigator = new SlideNavigator(this, Slides);
+            _slideNavigator.GoTo(0);
         }
 
-        public Season ActiveSeason
+        public object[] Slides { get; }
+
+        public SeasonSet SeasonSet { get; } = new SeasonSet();
+
+        public RaceViewModel RaceViewModel { get; } = new RaceViewModel();
+
+        public SeasonViewModel SeasonViewModel { get; } = new SeasonViewModel();
+
+        public int ActiveSlideIndex
         {
-            get { return _activeSeason; }
-            private set { this.MutateVerbose(ref _activeSeason, value, RaisePropertyChanged()); }
+            get { return _activeSlideIndex; }
+            set { this.MutateVerbose(ref _activeSlideIndex, value, RaisePropertyChanged()); }
         }
 
-        public int ActivePageIndex
+        private void ShowSeasonExecuted(object sender, ExecutedRoutedEventArgs e)
         {
-            get { return _activePageIndex; }
-            set { this.MutateVerbose(ref _activePageIndex, value, RaisePropertyChanged()); }
+            _slideNavigator.GoTo(
+                IndexOfSlide<SeasonViewModel>(),
+                () => SeasonViewModel.Show((Season)e.Parameter));
+        }
+
+        private void ShowRaceExecuted(object sender, ExecutedRoutedEventArgs e)
+        {
+            _slideNavigator.GoTo(
+                IndexOfSlide<RaceViewModel>(),
+                () => RaceViewModel.Show((Race)e.Parameter));
+        }
+
+        private void GoBackExecuted(object sender, ExecutedRoutedEventArgs e)
+        {
+            _slideNavigator.GoBack();
+        }
+
+        private void GoForwardExecuted(object sender, ExecutedRoutedEventArgs e)
+        {
+            _slideNavigator.GoForward();
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
@@ -35,6 +68,11 @@ namespace F1InXAML
         private Action<PropertyChangedEventArgs> RaisePropertyChanged()
         {
             return args => PropertyChanged?.Invoke(this, args);
+        }
+
+        private int IndexOfSlide<TSlide>()
+        {
+            return Slides.Select((o, i) => new {o, i}).First(a => a.o.GetType() == typeof (TSlide)).i;
         }
     }
 }

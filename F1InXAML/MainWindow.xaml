@@ -17,17 +17,22 @@
         Top="10" Left="10"
         d:DataContext="{d:DesignInstance local:MainViewModel, d:IsDesignTimeCreatable=False}">
     <Window.Resources>
-        <ResourceDictionary>
-            <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/materialdesigntheme.textblock.xaml"></ResourceDictionary>
-            </ResourceDictionary.MergedDictionaries>
-        </ResourceDictionary>
+        <DataTemplate DataType="{x:Type local:SeasonSet}">
+            <local:SeasonSetView HorizontalAlignment="Center" Width="600" Margin="32" />
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type local:SeasonViewModel}">
+            <local:SeasonView />
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type local:RaceViewModel}">
+            <local:RaceView />
+        </DataTemplate>
     </Window.Resources>
     <materialDesign:DialogHost>
-        <materialDesign:Transitioner SelectedIndex="{Binding ActivePageIndex}" AutoApplyTransitionOrigins="True">
-            <local:SeasonSetView DataContext="{Binding SeasonSet}" HorizontalAlignment="Center" Width="600" Margin="32" />
-            <local:SeasonView DataContext="{Binding ActiveSeason}" HorizontalAlignment="Center" Width="600" Margin="32" />
-        </materialDesign:Transitioner>
+        <materialDesign:Transitioner SelectedIndex="{Binding ActiveSlideIndex}" 
+                                     AutoApplyTransitionOrigins="True"
+                                     ItemsSource="{Binding Slides}"   
+                                     HorizontalAlignment="Stretch"
+                                     />
         <materialDesign:DialogHost.DialogContent>
             <Grid Margin="16 16 16 8">
                 <Grid.RowDefinitions>

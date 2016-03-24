@@ -4,7 +4,7 @@ namespace F1InXAML
 {
     public class ConstructorStanding
     {
-        public ConstructorStanding(Constructor constructor, int position, int points, int wins)
+        public ConstructorStanding(Constructor constructor, int position, double points, int wins)
         {
             if (constructor == null) throw new ArgumentNullException(nameof(constructor));
 
@@ -16,7 +16,7 @@ namespace F1InXAML
 
         public Constructor Constructor { get; }
         public int Position { get; }
-        public int Points { get; }
+        public double Points { get; }
         public int Wins { get; }
     }
 }

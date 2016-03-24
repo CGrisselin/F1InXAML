@@ -32,6 +32,6 @@ namespace F1InXAML
 
         public string DateOfBirth { get; }
 
-        public string Nationality { get; }
+        public string Nationality { get; }       
     }
 }

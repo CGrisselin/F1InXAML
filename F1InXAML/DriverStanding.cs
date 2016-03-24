@@ -4,7 +4,7 @@ namespace F1InXAML
 {
     public class DriverStanding
     {        
-        public DriverStanding(Driver driver, int position, int points, int wins)
+        public DriverStanding(Driver driver, int position, double points, int wins)
         {
             if (driver == null) throw new ArgumentNullException(nameof(driver));            
 
@@ -16,7 +16,7 @@ namespace F1InXAML
 
         public Driver Driver { get; }
         public int Position { get; }
-        public int Points { get; }
+        public double Points { get; }
         public int Wins { get; }
     }
 }

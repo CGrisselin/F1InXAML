@@ -18,17 +18,9 @@ namespace F1InXAML
         private readonly ObservableCollection<Season> _seasons = new ObservableCollection<Season>();
         private bool _isBusy;
 
-        public SeasonSet(Action<Season> showSeasonHandler)
+        public SeasonSet()
         {
-            if (showSeasonHandler == null) throw new ArgumentNullException(nameof(showSeasonHandler));
-
             Seasons = new ReadOnlyObservableCollection<Season>(_seasons);
-            ShowSeasonCommand = new Command(o =>
-            {
-                var season = o as Season;
-                if (season != null)
-                    showSeasonHandler(season);
-            });
 
             //TODO error handle
             Init();
@@ -48,40 +40,78 @@ namespace F1InXAML
         {
             IsBusy = true;
 
-            for (var i = 2015; i >= 2010; i--)
+            var seasonHeaders = await FetchAsync();
+            foreach (var seasonHeader in seasonHeaders.Where(sh => sh.Year >= 2000))
             {
-                var season = await FetchAsync(i);
+                var season = await FetchAsync(seasonHeader);
                 _seasons.Add(season);
             }
 
             IsBusy = false;
         }
 
-        private static async Task<Season> FetchAsync(int year)
+        private static async Task<SeasonHeader[]> FetchAsync()
         {
-            var driverStandings = await GetDriverStandings(year);
-            var constructorStandings = await GetConstructorStandings(year);
+            var webRequest = ApiHelper.CreateWebRequest("http://ergast.com/api/f1/seasons?limit=1000");
+            var webResponse = await webRequest.GetResponseAsync();
+            using (var stream = webResponse.GetResponseStream())
+            {
+                XNamespace ns;
+                var xDocument = ApiHelper.ReadResponse(stream, out ns);
 
-            return new Season(year, driverStandings, constructorStandings);
+                return xDocument.Root
+                    .Element(ns + "SeasonTable")
+                    .Elements(ns + "Season")
+                    .Select(XExtensions.ToSeasonHeader)
+                    .OrderByDescending(sh => sh.Year)
+                    .ToArray();
+            }
         }
 
-        private static async Task<DriverStanding[]> GetDriverStandings(int year)
+        private static async Task<Season> FetchAsync(SeasonHeader seasonHeader)
         {
-            var webRequest = CreateWebRequest($"http://ergast.com/api/f1/{year}/driverStandings");
+            var calendar = await GetCalendar(seasonHeader.Year);
+            var driverStandings = await GetDriverStandings(seasonHeader.Year);
+            var constructorStandings = await GetConstructorStandings(seasonHeader.Year);
+
+            return new Season(seasonHeader.Year, seasonHeader.Url, calendar, driverStandings, constructorStandings);
+        }
+
+        private static async Task<Race[]> GetCalendar(int year)
+        {
+            var webRequest = ApiHelper.CreateWebRequest($"http://ergast.com/api/f1/{year}");
 
             var webResponse = await webRequest.GetResponseAsync();
             using (var stream = webResponse.GetResponseStream())
             {
                 XNamespace ns;
-                var xDocument = ReadResponse(stream, out ns);
+                var xDocument = ApiHelper.ReadResponse(stream, out ns);
 
-                var driverStandings = xDocument.Root
-                    .Element(ns + "StandingsTable")
-                    .Element(ns + "StandingsList")
+                return xDocument.Root.Element(ns + "RaceTable")
+                    .Elements(ns + "Race")
+                    .Select(raceElement => raceElement.ToRace(ns))
+                    .ToArray();
+            }
+        }        
+
+        private static async Task<DriverStanding[]> GetDriverStandings(int year)
+        {
+            var webRequest = ApiHelper.CreateWebRequest($"http://ergast.com/api/f1/{year}/driverStandings");
+
+            var webResponse = await webRequest.GetResponseAsync();
+            using (var stream = webResponse.GetResponseStream())
+            {
+                XNamespace ns;
+                var xDocument = ApiHelper.ReadResponse(stream, out ns);
+
+                var standingsList = xDocument.Root.Element(ns + "StandingsTable").Element(ns + "StandingsList");
+                if (standingsList == null) return new DriverStanding[0];
+
+                var driverStandings = standingsList
                     .Elements(ns + "DriverStanding").OrderBy(standingElement => standingElement.Attribute("position").Value)
-                    .Select(standingElement => new DriverStanding(ToDriver(standingElement.Element(ns + "Driver"), ns),
+                    .Select(standingElement => new DriverStanding(standingElement.Element(ns + "Driver").ToDriver(ns),
                         int.Parse(standingElement.Attribute("position").Value),
-                        int.Parse(standingElement.Attribute("points").Value),
+                        double.Parse(standingElement.Attribute("points").Value),
                         int.Parse(standingElement.Attribute("wins").Value)));
 
                 return driverStandings.OrderBy(ds => ds.Position).ToArray();
@@ -90,66 +120,27 @@ namespace F1InXAML
 
         private static async Task<ConstructorStanding[]> GetConstructorStandings(int year)
         {
-            var webRequest = CreateWebRequest($"http://ergast.com/api/f1/{year}/constructorStandings");
+            var webRequest = ApiHelper.CreateWebRequest($"http://ergast.com/api/f1/{year}/constructorStandings");
 
             var webResponse = await webRequest.GetResponseAsync();
             using (var stream = webResponse.GetResponseStream())
             {
                 XNamespace ns;
-                var xDocument = ReadResponse(stream, out ns);
+                var xDocument = ApiHelper.ReadResponse(stream, out ns);
 
-                var constructorStandings = xDocument.Root
-                    .Element(ns + "StandingsTable")
-                    .Element(ns + "StandingsList")
+                var standingsList = xDocument.Root.Element(ns + "StandingsTable").Element(ns + "StandingsList");
+                if (standingsList == null) return new ConstructorStanding[0];
+
+                var constructorStandings = standingsList
                     .Elements(ns + "ConstructorStanding").OrderBy(standingElement => standingElement.Attribute("position").Value)
-                    .Select(standingElement => new ConstructorStanding(ToConstructor(standingElement.Element(ns + "Constructor"), ns),
+                    .Select(standingElement => new ConstructorStanding(standingElement.Element(ns + "Constructor").ToConstructor(ns),
                         int.Parse(standingElement.Attribute("position").Value),
-                        int.Parse(standingElement.Attribute("points").Value),
+                        double.Parse(standingElement.Attribute("points").Value),
                         int.Parse(standingElement.Attribute("wins").Value)));
 
                 return constructorStandings.OrderBy(ds => ds.Position).ToArray();
             }
-        }
-
-        private static XDocument ReadResponse(Stream stream, out XNamespace ns)
-        {
-            var streamReader = new StreamReader(stream, Encoding.UTF8);
-            var xml = streamReader.ReadToEnd();
-            var xDocument = XDocument.Parse(xml);
-            ns = xDocument.Root.GetDefaultNamespace();
-            return xDocument;
-        }
-
-        private static WebRequest CreateWebRequest(string url)
-        {
-            var webRequest = WebRequest.Create(url);
-            webRequest.UseDefaultCredentials = true;
-            webRequest.Credentials = CredentialCache.DefaultCredentials;
-            webRequest.Proxy.Credentials = CredentialCache.DefaultCredentials;
-            return webRequest;
-        }
-
-        private static Driver ToDriver(XElement driverElement, XNamespace ns)
-        {
-            return new Driver(
-                driverElement.Attribute("driverId").Value,
-                driverElement.Attribute("code").Value,
-                driverElement.Attribute("url").Value,
-                driverElement.ElementValueOrNull(ns + "PermanentNumber"),
-                driverElement.ElementValueOrNull(ns + "GivenName"),
-                driverElement.ElementValueOrNull(ns + "FamilyName"),
-                driverElement.ElementValueOrNull(ns + "DateOfBirth"),
-                driverElement.ElementValueOrNull(ns + "Nationality"));
-        }
-
-        private static Constructor ToConstructor(XElement driverElement, XNamespace ns)
-        {
-            return new Constructor(
-                driverElement.Attribute("constructorId").Value,                
-                driverElement.Attribute("url").Value,                
-                driverElement.ElementValueOrNull(ns + "Name"),
-                driverElement.ElementValueOrNull(ns + "Nationality"));
-        }
+        }                
 
         public event PropertyChangedEventHandler PropertyChanged;
 

@@ -1,0 +1,128 @@
+﻿<UserControl x:Class="F1InXAML.RaceView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:F1InXAML"
+             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+             xmlns:dragablz="http://dragablz.net/winfx/xaml/dragablz"
+             mc:Ignorable="d" 
+             d:DesignHeight="300" d:DesignWidth="300"
+             d:DataContext="{d:DesignInstance local:RaceViewModel, d:IsDesignTimeCreatable=False}">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+        <materialDesign:ColorZone Mode="PrimaryLight" Padding="16">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                <ProgressBar IsIndeterminate="True" Value="30" 
+                             Style="{DynamicResource MaterialDesignCircularProgressBar}"
+                             Foreground="{DynamicResource MaterialDesignPaper}"
+                             VerticalAlignment="Center"                                 
+                             Margin="16"
+                             Visibility="{Binding IsBusy, Converter={StaticResource BooleanToVisibilityConverter}}" />
+                <StackPanel Grid.Column="0">
+                    <TextBlock Style="{StaticResource MaterialDesignDisplay1TextBlock}">
+                        <TextBlock.Text>
+                            <MultiBinding StringFormat="{}{0}, Round {1}">
+                                <Binding Path="Race.Season" />
+                                <Binding Path="Race.Round" />
+                            </MultiBinding>
+                        </TextBlock.Text>
+                    </TextBlock>
+                    <TextBlock Style="{StaticResource MaterialDesignCaptionTextBlock}" Text="{Binding Race.Date}" />
+                </StackPanel>
+                <StackPanel Grid.Column="1" HorizontalAlignment="Right">
+                    <TextBlock Style="{StaticResource MaterialDesignSubheadingTextBlock}" Text="{Binding Race.Name}" />
+                    <TextBlock Style="{StaticResource MaterialDesignSubheadingTextBlock}" Text="{Binding Race.Circuit.Name}" />
+                    <TextBlock Style="{StaticResource MaterialDesignSubheadingTextBlock}" Text="{Binding Race.Circuit.Location.Country}" />
+                </StackPanel>
+            </Grid>
+        </materialDesign:ColorZone>
+        <dragablz:TabablzControl Grid.Row="1" SelectedIndex="{Binding SelectedTabIndex}">
+            <TabItem Header="RESULTS">
+                <ListBox ItemsSource="{Binding Results}" HorizontalContentAlignment="Stretch"
+                         ItemContainerStyle="{StaticResource ListBoxItemStyle}"
+                         Margin="16">
+                    <ListBox.ItemTemplate>
+                        <DataTemplate DataType="{x:Type local:Result}">
+                            <materialDesign:TransitioningContent OpeningEffectsOffset="{materialDesign:IndexedItemOffsetMultiplierExtension 0:0:0.1}"
+                                                                 Opacity="0"
+                                                                 RunHint="Loaded">
+                                <materialDesign:TransitioningContent.OpeningEffects>
+                                    <materialDesign:TransitionEffect Kind="SlideInFromLeft" />
+                                    <materialDesign:TransitionEffect Kind="FadeIn" />
+                                </materialDesign:TransitioningContent.OpeningEffects>
+                                <materialDesign:ColorZone Mode="Dark">
+                                    <DockPanel>
+                                        <TextBlock Text="{Binding Points}" VerticalAlignment="Center" DockPanel.Dock="Right" Margin="0 0 16 0" />
+                                        <StackPanel Orientation="Horizontal">
+                                            <materialDesign:ColorZone Mode="Accent" Height="26" Width="26" Margin="4" CornerRadius="2">
+                                                <TextBlock Text="{Binding Position}" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                            </materialDesign:ColorZone>
+                                            <TextBlock Text="{Binding Driver.PermanentNumber}" VerticalAlignment="Center" Margin="16 0 0 0" Width="16" />
+                                            <TextBlock VerticalAlignment="Center" Margin="16 0 0 0">
+                                                <Run Text="{Binding Driver.FamilyName, Mode=OneWay}" /> 
+                                                <Run Text="{Binding Driver.GivenName, Mode=OneWay}" />
+                                            </TextBlock>
+                                        </StackPanel>
+                                    </DockPanel>
+                                </materialDesign:ColorZone>
+                            </materialDesign:TransitioningContent>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
+            </TabItem>
+            <TabItem Header="STATS">
+                <DataGrid ItemsSource="{Binding Results}" AutoGenerateColumns="False" IsReadOnly="True">
+                    <DataGrid.Resources>
+                        <Style x:Key="CenterAlign" TargetType="TextBlock">
+                            <Setter Property="HorizontalAlignment" Value="Center" />
+                        </Style>
+                        <Style x:Key="RightAlign" TargetType="TextBlock">
+                            <Setter Property="HorizontalAlignment" Value="Right" />
+                        </Style>
+                    </DataGrid.Resources>
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="Position" Binding="{Binding PositionText}" SortMemberPath="Position" ElementStyle="{StaticResource CenterAlign}" />
+                        <DataGridTextColumn Header="Number" Binding="{Binding Number}" ElementStyle="{StaticResource CenterAlign}" />
+                        <DataGridTextColumn Header="Driver" Binding="{Binding Driver.Code}" ElementStyle="{StaticResource CenterAlign}" />
+                        <DataGridTextColumn Header="Name" SortMemberPath="Driver.FamilyName">
+                            <DataGridTextColumn.Binding>
+                                <MultiBinding StringFormat="{}{0}, {1}">
+                                    <Binding Path="Driver.FamilyName" />
+                                    <Binding Path="Driver.GivenName" />
+                                </MultiBinding>
+                            </DataGridTextColumn.Binding>
+                        </DataGridTextColumn>
+                        <DataGridTextColumn Header="Constructor" Binding="{Binding Constructor.Name}" />
+                        <DataGridTextColumn Header="Grid" Binding="{Binding Grid}" ElementStyle="{StaticResource CenterAlign}" />
+                        <DataGridTextColumn Header="Laps" Binding="{Binding Laps}" ElementStyle="{StaticResource CenterAlign}" />
+                        <DataGridTextColumn Header="Time" Binding="{Binding Time}" ElementStyle="{StaticResource RightAlign}" />
+                        <DataGridTextColumn Header="Fastest Lap" Binding="{Binding FastestLap.Time}"  ElementStyle="{StaticResource RightAlign}" SortMemberPath="FastestLap.Time" />
+                        <DataGridTextColumn Header="Fastest Lap avg" ElementStyle="{StaticResource RightAlign}" SortMemberPath="FastestLap.Time">
+                            <DataGridTextColumn.Binding>
+                                <MultiBinding StringFormat="{}{0} {1}">
+                                    <Binding Path="FastestLap.AverageSpeed.Value" />
+                                    <Binding Path="FastestLap.AverageSpeed.Unit" />
+                                </MultiBinding>
+                            </DataGridTextColumn.Binding>
+                        </DataGridTextColumn>
+                    </DataGrid.Columns>
+                </DataGrid>
+            </TabItem>
+        </dragablz:TabablzControl>
+        <Button Style="{DynamicResource MaterialDesignFloatingActionAccentButton}"
+                Grid.Row="1"
+                Command="{x:Static local:NavigationCommands.GoBackCommand}"
+                HorizontalAlignment="Right" VerticalAlignment="Top"
+                Margin="0 -28 48 32">
+            <materialDesign:PackIcon Kind="ArrowLeft" />
+        </Button>
+    </Grid>
+</UserControl>

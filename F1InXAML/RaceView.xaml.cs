@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -17,18 +16,13 @@ using System.Windows.Shapes;
 namespace F1InXAML
 {
     /// <summary>
-    /// Interaction logic for SeasonSetView.xaml
+    /// Interaction logic for RaceView.xaml
     /// </summary>
-    public partial class SeasonSetView : UserControl
+    public partial class RaceView : UserControl
     {
-        public SeasonSetView()
+        public RaceView()
         {
             InitializeComponent();
-        }
-
-        private void DonateButton_OnClick(object sender, RoutedEventArgs e)
-        {
-            Process.Start("https://pledgie.com/campaigns/31029");
         }
     }
 }
