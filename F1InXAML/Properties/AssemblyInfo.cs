@@ -10,9 +10,9 @@ using System.Windows;
 [assembly: AssemblyTitle("F1InXAML")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("BNP Paribas")]
+[assembly: AssemblyCompany("Mulholland Software")]
 [assembly: AssemblyProduct("F1InXAML")]
-[assembly: AssemblyCopyright("Copyright © BNP Paribas 2016")]
+[assembly: AssemblyCopyright("Copyright © Mulholland Software 2016")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
