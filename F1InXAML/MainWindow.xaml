@@ -14,7 +14,8 @@
         TextOptions.TextRenderingMode="Auto"       
         Icon="application.ico"
         FontFamily="pack://application:,,,/MaterialDesignThemes.Wpf;component/Resources/Roboto/#Roboto"
-        Title="F1ix" Height="840" Width="800"        
+        Title="F1ix" Height="840" Width="800" 
+        Top="10" Left="10"
         d:DataContext="{d:DesignInstance local:MainViewModel, d:IsDesignTimeCreatable=False}">
     <Window.Resources>
         <DataTemplate DataType="{x:Type local:SeasonSet}">
