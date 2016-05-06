@@ -15,7 +15,10 @@ namespace F1InXAML
     /// Interaction logic for App.xaml
     /// </summary>
     public partial class App : Application
-    {    
+    {
+        private static Task<UpdateManager> _updateManager = null;
+
+
         private void App_OnStartup(object sender, StartupEventArgs e)
         {
             //Timeline.DesiredFrameRateProperty.OverrideMetadata(typeof(Timeline),
@@ -29,25 +32,20 @@ namespace F1InXAML
             var mainWindow = new MainWindow {DataContext = new MainViewModel()};
             mainWindow.Show();
 
-#if RELEASE
             Task.Factory.StartNew(CheckForUpdates);           
-#endif
         }
 
         private static async void CheckForUpdates()
+        {              
+            _updateManager = UpdateManager.GitHubUpdateManager("https://github.com/MaterialDesignInXAML/F1InXAML", "F1ix");
+
+            if (_updateManager.Result.IsInstalledApp)
+                await _updateManager.Result.UpdateApp();
+        }
+
+        private void App_OnExit(object sender, ExitEventArgs e)
         {
-            using (var mgr = UpdateManager.GitHubUpdateManager("https://github.com/MaterialDesignInXAML/F1InXAML"))
-            {
-                try
-                {
-                    mgr.Result.UpdateApp();
-                }
-                catch (Exception)
-                {
-                                        
-                }
-                
-            }
+            _updateManager?.Dispose();
         }
     }
 }

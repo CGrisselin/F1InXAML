@@ -3,7 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:local="clr-namespace:F1InXAML"
              xmlns:dragablz="http://dragablz.net/winfx/xaml/dragablz"
-             Startup="App_OnStartup">
+             Startup="App_OnStartup" Exit="App_OnExit">
     <Application.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
