@@ -7,11 +7,11 @@ using System.Windows;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("F1InXAML")]
+[assembly: AssemblyTitle("F1ix")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Mulholland Software")]
-[assembly: AssemblyProduct("F1InXAML")]
+[assembly: AssemblyProduct("F1ix")]
 [assembly: AssemblyCopyright("Copyright © Mulholland Software 2016")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
