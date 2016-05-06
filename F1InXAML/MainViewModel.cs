@@ -1,6 +1,7 @@
 ﻿using System;
 using System.ComponentModel;
 using System.Linq;
+using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Windows.Input;
 using System.Windows.Markup;
@@ -32,6 +33,8 @@ namespace F1InXAML
         public RaceViewModel RaceViewModel { get; } = new RaceViewModel();
 
         public SeasonViewModel SeasonViewModel { get; } = new SeasonViewModel();
+
+        public string Version { get; } = Assembly.GetEntryAssembly().GetName().Version.ToString();
 
         public int ActiveSlideIndex
         {

@@ -44,6 +44,7 @@
                     <TextBlock Style="{StaticResource MaterialDesignSubheadingTextBlock}">
                         <Hyperlink Click="MaterialDesignInXaml_OnClick">Material Design In XAML Toolkit</Hyperlink> 
                     </TextBlock>
+                    <TextBlock Text="{Binding Version}" />
                 </StackPanel>
                 <Button Command="{x:Static materialDesign:DialogHost.CloseDialogCommand}"
                         Style="{DynamicResource MaterialDesignFlatButton}"

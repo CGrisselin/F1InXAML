@@ -7,6 +7,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media.Animation;
+using Squirrel;
 
 namespace F1InXAML
 {
@@ -23,10 +24,22 @@ namespace F1InXAML
             FrameworkElement.LanguageProperty.OverrideMetadata(
                 typeof (FrameworkElement),
                 new FrameworkPropertyMetadata(
-                    System.Windows.Markup.XmlLanguage.GetLanguage(CultureInfo.CurrentCulture.IetfLanguageTag)));
+                    System.Windows.Markup.XmlLanguage.GetLanguage(CultureInfo.CurrentCulture.IetfLanguageTag)));           
 
             var mainWindow = new MainWindow {DataContext = new MainViewModel()};
             mainWindow.Show();
+
+#if RELEASE
+            CheckForUpdates();
+#endif
+        }
+
+        private static async void CheckForUpdates()
+        {
+            using (var mgr = UpdateManager.GitHubUpdateManager("https://github.com/MaterialDesignInXAML/F1InXAML"))
+            {
+                await mgr.Result.UpdateApp();
+            }
         }
     }
 }
