@@ -30,7 +30,7 @@ namespace F1InXAML
             mainWindow.Show();
 
 #if RELEASE
-            CheckForUpdates();
+            Task.Factory.StartNew(CheckForUpdates);           
 #endif
         }
 
@@ -38,7 +38,15 @@ namespace F1InXAML
         {
             using (var mgr = UpdateManager.GitHubUpdateManager("https://github.com/MaterialDesignInXAML/F1InXAML"))
             {
-                await mgr.Result.UpdateApp();
+                try
+                {
+                    mgr.Result.UpdateApp();
+                }
+                catch (Exception)
+                {
+                                        
+                }
+                
             }
         }
     }
