@@ -1,8 +1,10 @@
 ﻿using System;
 using System.ComponentModel;
+using System.Globalization;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.CompilerServices;
+using System.Threading;
 using System.Windows.Input;
 using System.Windows.Markup;
 
@@ -15,6 +17,9 @@ namespace F1InXAML
 
         public MainViewModel()
         {
+            CultureInfo ci = new CultureInfo("en-GB");
+            Thread.CurrentThread.CurrentCulture = ci;
+
             CommandManager.RegisterClassCommandBinding(typeof(MainWindow), new CommandBinding(NavigationCommands.ShowRaceCommand, ShowRaceExecuted));
             CommandManager.RegisterClassCommandBinding(typeof(MainWindow), new CommandBinding(NavigationCommands.ShowSeasonCommand, ShowSeasonExecuted));
             CommandManager.RegisterClassCommandBinding(typeof(MainWindow), new CommandBinding(NavigationCommands.GoBackCommand, GoBackExecuted));
